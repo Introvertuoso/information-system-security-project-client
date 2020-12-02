@@ -21,22 +21,19 @@ public class ConnectionHandler {
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner CLI = new Scanner(System.in);
 
             if (!connectionPolicy.handshake(socket)) {
                 Logger.log("Failed to perform handshake." + "\n");
             } else {
-//                while (in.hasNextLine()) {
-//                    out.println(connectionPolicy.cryptographyMethod.encrypt(data));
-//                    data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-//                    System.out.println(data);
-//
-//                }
-                //TODO: get input from the user
-                Message message = new Message(new Task("write files/baby_jesus.txt nigger whatchu say?"), new Certificate("certificate"));
-                message.packData();
-                out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
-                data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-                System.out.println(data);
+                while (CLI.hasNextLine()) {
+                    Message message = new Message(new Task(CLI.nextLine()), new Certificate("certificate"));
+                    message.packData();
+                    out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
+                    data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
+                    System.out.println(data);
+                }
+
             }
 
         } catch (Exception e) {
