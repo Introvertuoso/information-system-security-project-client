@@ -7,7 +7,7 @@ public class Certificate {
 
     @Override
     public String toString() {
-        return super.toString();
+        return content;
     }
 
     public String getContent() {

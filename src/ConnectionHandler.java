@@ -32,13 +32,16 @@ public class ConnectionHandler {
 //
 //                }
                 //TODO: get input from the user
-                out.println(connectionPolicy.cryptographyMethod.encrypt("HI YOU LITTLE SHIT"));
+                Message message = new Message(new Task("write files/baby_jesus.txt nigger whatchu say?"), new Certificate("certificate"));
+                message.packData();
+                out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
                 data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
                 System.out.println(data);
             }
 
         } catch (Exception e) {
             Logger.log("Error: " + socket + "\n");
+            e.printStackTrace();
         } finally {
             try {
                 socket.close();
@@ -49,7 +52,5 @@ public class ConnectionHandler {
             }
         }
     }
-
-
 
 }

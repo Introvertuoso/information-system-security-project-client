@@ -7,32 +7,32 @@ import java.util.List;
 
 // TODO: Test if this works
 public class Task {
-    private String filepath;
     private String action; // Supported actions are list, read, write, navigate?
+    private String filepath;
     private String newFileContent;
 
-    public Task(String filepath, String action, String newFileContent) {
-        this.filepath = filepath;
+    public Task(String action, String filepath, String newFileContent) {
         this.action = action;
+        this.filepath = filepath;
         this.newFileContent = newFileContent;
     }
     public Task(String command) {
         StringBuilder res = new StringBuilder(command);
-        String[] temp = command.split(" ");
+        String[] temp = command.split(" ", 3);
         if (temp.length < 3) {
             res.append(" ".repeat(3 - temp.length));
         }
-        temp = res.toString().split(" ");
-        this.filepath = temp[0];
-        this.action = temp[1];
+        temp = res.toString().split(" ", 3);
+        this.action = temp[0];
+        this.filepath = temp[1];
         this.newFileContent = temp[2];
     }
 
     @Override
     public String toString() {
         String[] temp = new String[3];
-        temp[0] = this.filepath;
-        temp[1] = this.action;
+        temp[0] = this.action;
+        temp[1] = this.filepath;
         temp[2] = this.newFileContent;
         return String.join(" ", temp);
     }
