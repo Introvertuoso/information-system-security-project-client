@@ -27,11 +27,14 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
 
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
+            cryptographyMethod.init();
+
             Logger.log("Done" + "\n");
             res = true;
 
         } catch (IOException e) {
             Logger.log("Failed" + "\n");
+            e.printStackTrace();
         }
         return res;
     }

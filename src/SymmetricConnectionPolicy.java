@@ -15,20 +15,22 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public boolean handshake(Socket socket) {
         Logger.log("Performing handshake...");
+        boolean res = false;
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            String IV = generateKey(128); //generate IV key
+            String IV = generateIV(); //generate IV key
             out.println(IV);
             ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
 
             Logger.log("Done" + "\n");
+            res = true;
             
         } catch (IOException e) {
             Logger.log("Failed" + "\n");
         }
-        return false;
+        return res;
     }
 
 }
