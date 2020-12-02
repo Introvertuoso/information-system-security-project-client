@@ -29,10 +29,10 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             Key privateKey = keys.getKey();         //generate the public key
             String publicKey = keys.getValue();     //generate the public key
 
-            String clientPublicKey = in.nextLine();
             out.println(publicKey);
+            String serverPublicKey = in.nextLine();
 
-            ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
+            ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(serverPublicKey);
             ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
             
             Logger.log("Done" + "\n");

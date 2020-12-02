@@ -19,15 +19,12 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         boolean res = false;
 
         try {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner in = new Scanner(socket.getInputStream());
             
             super.handshake(socket);
 
-            String sessionKey = generateKey(128); //generate session key
-            String IV = generateKey(128); //generate IV key
-
-            out.println(cryptographyMethod.encrypt(sessionKey));
-            out.println(cryptographyMethod.encrypt(IV));
+            String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
+            String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
 
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
             Logger.log("Done" + "\n");
