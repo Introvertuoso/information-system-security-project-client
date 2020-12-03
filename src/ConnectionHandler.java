@@ -16,39 +16,39 @@ public class ConnectionHandler {
         this.connectionPolicy.init();
     }
 
-    public void run(){
-        Logger.log("Connected: " + socket + "\n");
+    public void run() {
+        Logger.log("Connected: " + socket);
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Scanner CLI = new Scanner(System.in);
 
-            System.out.println("enter your phone number: ");
+            System.out.println("\nEnter your phone number: ");
             String phoneNumber = CLI.nextLine();
 
-            if (!connectionPolicy.handshake(socket,phoneNumber)) {
-                Logger.log("Failed to perform handshake." + "\n");
+            if (!connectionPolicy.handshake(socket, phoneNumber)) {
+                Logger.log("Failed to perform handshake.");
             } else {
+                System.out.println("\nEnter your commands below ");
                 while (CLI.hasNextLine()) {
                     Message message = new Message(new Task(CLI.nextLine()), new Certificate("certificate"));
                     message.packData();
                     out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
                     data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-                    System.out.println(data);
+                    System.out.println("\n" + data);
                 }
 
             }
 
         } catch (Exception e) {
-            Logger.log("Error: " + socket + "\n");
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         } finally {
             try {
                 socket.close();
-                Logger.log("Closed: " + socket + "\n");
+                Logger.log("Closed: " + socket);
 
             } catch (IOException e) {
-                Logger.log("Failed to close socket.\n");
+                Logger.log(e.getMessage());
             }
         }
     }

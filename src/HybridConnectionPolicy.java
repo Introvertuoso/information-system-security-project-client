@@ -10,12 +10,10 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         Logger.log("Initializing hybrid connection...");
         cryptographyMethod = new AsymmetricCryptographyMethod();
         cryptographyMethod.init();
-        Logger.log("Done" + "\n");
     }
 
     @Override
     public boolean handshake(Socket socket, String phoneNumber) {
-        Logger.log("Performing handshake...");
         boolean res = false;
 
         try {
@@ -29,12 +27,10 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
             cryptographyMethod.init();
 
-            Logger.log("Done" + "\n");
             res = true;
 
         } catch (IOException e) {
-            Logger.log("Failed" + "\n");
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
         return res;
     }

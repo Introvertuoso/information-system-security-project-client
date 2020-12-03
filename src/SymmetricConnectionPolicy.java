@@ -9,7 +9,6 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
         Logger.log("Initializing symmetric connection...");
         this.cryptographyMethod = new SymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        Logger.log("Done" + "\n");
     }
 
     @Override
@@ -24,11 +23,10 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
             out.println(IV);
             ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
 
-            Logger.log("Done" + "\n");
             res = true;
             
         } catch (IOException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return res;
     }

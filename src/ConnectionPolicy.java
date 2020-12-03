@@ -10,7 +10,7 @@ public abstract class ConnectionPolicy {
     protected ICryptographyMethod cryptographyMethod;
 
     public abstract void init();
-    public abstract boolean handshake(Socket socket,String phoneNumber);
+    public abstract boolean handshake(Socket socket, String phoneNumber);
 
     public String generateKey(int keySize){
         Logger.log("Generating key...");
@@ -22,16 +22,16 @@ public abstract class ConnectionPolicy {
             SecretKey secretKey = gen.generateKey();
             byte[] bytes = secretKey.getEncoded();
             SK = String.format("%032X", new BigInteger(+1, bytes));
-            
-            Logger.log("Done" + "\n");
+
 
         } catch (NoSuchAlgorithmException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return SK;
     }
 
     public String generateIV() {
+        Logger.log("Generating initial vector...");
         byte[] iv = new byte[128/8];
         SecureRandom srandom = new SecureRandom();
         srandom.nextBytes(iv);

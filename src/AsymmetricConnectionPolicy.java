@@ -19,7 +19,6 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         Logger.log("Initializing asymmetric connection...");
         this.cryptographyMethod = new AsymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        Logger.log("Done" + "\n");
     }
 
     @Override
@@ -41,12 +40,11 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
             ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(serverPublicKey);
             ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
-            
-            Logger.log("Done" + "\n");
+
             res = true;
 
         } catch (IOException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return res;
     }
@@ -62,20 +60,20 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             KeyPair kp = kpg.generateKeyPair();
             publicKey = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
             privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
-            Logger.log("Done" + "\n");
             return new Pair<String, String>(publicKey, privateKey);
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return null;
     }
 
     public Pair<String,String> getUserKeys(String phoneNumber){
+        Logger.log("Checking user credentials...");
         try {
             List<String> lines = Files.readAllLines(Path.of("files/users.txt"));
             for (String line : lines) {
-                String temp[] = line.split("\0");
+                String[] temp = line.split("\0");
                 if (temp[0].equals(phoneNumber) )
                     return new Pair<>(temp[1],temp[2]);
             }
@@ -89,7 +87,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             return keys;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
 
         return  generateKeyPair();

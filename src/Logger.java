@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 public class Logger {
     public static boolean consoleLogs = true;
     public static boolean fileLogs = false;
-    public static String FAILURE = "Failure";
-    public static String SUCCESS = "Success";
+    public static String FAILURE = "Failure\n";
+    public static String SUCCESS = "Success\n";
     private static ArrayList<String> logs;
     
     public static void start() {
@@ -46,7 +46,7 @@ public class Logger {
 
     public static synchronized void log(String message) {
         if (consoleLogs) {
-            System.out.print(message);
+            System.out.println(message);
         }
         if (fileLogs) {
             if (logs == null) {
