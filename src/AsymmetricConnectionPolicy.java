@@ -81,7 +81,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             }
             Pair<String, String> keys = generateKeyPair();
             String temp[] = {phoneNumber ,keys.getKey(),keys.getValue() };
-            String line =  String.join(" ", temp);
+            String line =  String.join("/0", temp);
             FileWriter writer = new FileWriter("files/users.txt",true);
             writer.write(line);
             writer.close();
