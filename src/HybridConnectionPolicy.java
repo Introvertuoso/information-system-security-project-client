@@ -14,14 +14,14 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
     }
 
     @Override
-    public boolean handshake(Socket socket) {
+    public boolean handshake(Socket socket, String phoneNumber) {
         Logger.log("Performing handshake...");
         boolean res = false;
 
         try {
             Scanner in = new Scanner(socket.getInputStream());
             
-            super.handshake(socket);
+            super.handshake(socket, phoneNumber);
 
             String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
             String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key

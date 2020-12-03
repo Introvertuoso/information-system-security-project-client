@@ -13,7 +13,7 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
     }
 
     @Override
-    public boolean handshake(Socket socket) {
+    public boolean handshake(Socket socket, String phoneNumber) {
         Logger.log("Performing handshake...");
         boolean res = false;
         try {

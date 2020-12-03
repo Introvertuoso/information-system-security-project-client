@@ -23,7 +23,10 @@ public class ConnectionHandler {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Scanner CLI = new Scanner(System.in);
 
-            if (!connectionPolicy.handshake(socket)) {
+            System.out.println("enter your phone number: ");
+            String phoneNumber = CLI.nextLine();
+
+            if (!connectionPolicy.handshake(socket,phoneNumber)) {
                 Logger.log("Failed to perform handshake." + "\n");
             } else {
                 while (CLI.hasNextLine()) {

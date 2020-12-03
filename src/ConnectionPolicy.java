@@ -10,7 +10,7 @@ public abstract class ConnectionPolicy {
     protected ICryptographyMethod cryptographyMethod;
 
     public abstract void init();
-    public abstract boolean handshake(Socket socket);
+    public abstract boolean handshake(Socket socket,String phoneNumber);
 
     public String generateKey(int keySize){
         Logger.log("Generating key...");
