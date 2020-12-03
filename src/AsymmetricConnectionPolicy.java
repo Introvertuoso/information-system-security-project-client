@@ -75,13 +75,13 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         try {
             List<String> lines = Files.readAllLines(Path.of("files/users.txt"));
             for (String line : lines) {
-                String temp[] = line.split("/0");
-                if (temp[0] == phoneNumber )
+                String temp[] = line.split("\0");
+                if (temp[0].equals(phoneNumber) )
                     return new Pair<>(temp[1],temp[2]);
             }
             Pair<String, String> keys = generateKeyPair();
             String temp[] = {phoneNumber ,keys.getKey(),keys.getValue() };
-            String line =  String.join("/0", temp);
+            String line =  String.join("\0", temp)+'\n';
             FileWriter writer = new FileWriter("files/users.txt",true);
             writer.write(line);
             writer.close();
