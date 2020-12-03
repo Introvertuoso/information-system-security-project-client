@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="482.684931506849" y="240.67123287671228">SymmetricCryptographyMethod</node>
+    <node x="561.7397260273972" y="460.4383561643835">Task</node>
+    <node x="588.7945205479452" y="8.205479452054647">Message</node>
+    <node x="-392.87671232876716" y="216.93150684931507">AsymmetricConnectionPolicy</node>
+    <node x="-5.575342465753579" y="389.5753424657534">Logger</node>
+    <node x="-112.87671232876716" y="238.93150684931507">SymmetricConnectionPolicy</node>
+    <node x="-379.5890410958906" y="511.39726027397256">Test</node>
+    <node x="82.19178082191786" y="32.28767123287662">Client</node>
+    <node x="60.52054794520518" y="125.09589041095884">Pair</node>
+    <node x="321.3698630136986" y="4.917808219177999">ICryptographyMethod</node>
+    <node x="226.84931506849307" y="462.08219178082186">ConnectionHandler</node>
+    <node x="-378.87671232876716" y="386.93150684931504">HybridConnectionPolicy</node>
+    <node x="185.7534246575342" y="200.58904109589034">AsymmetricCryptographyMethod</node>
+    <node x="-266.37671232876716" y="4.93150684931507">ConnectionPolicy</node>
+    <node x="-191.1643835616439" y="508.1095890410958">Certificate</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="SymmetricConnectionPolicy" target="ConnectionPolicy">
+      <point x="0.0" y="-38.0" />
+      <point x="11.123287671232845" y="191.93150684931507" />
+      <point x="-55.626712328767155" y="191.93150684931507" />
+      <point x="70.25" y="81.0" />
+    </edge>
+    <edge source="AsymmetricConnectionPolicy" target="ConnectionPolicy">
+      <point x="0.0" y="-60.0" />
+      <point x="-262.87671232876716" y="191.93150684931507" />
+      <point x="-196.12671232876716" y="191.93150684931507" />
+      <point x="-70.25" y="81.0" />
+    </edge>
+    <edge source="HybridConnectionPolicy" target="AsymmetricConnectionPolicy">
+      <point x="0.0" y="-38.0" />
+      <point x="0.0" y="60.0" />
+    </edge>
+    <edge source="AsymmetricCryptographyMethod" target="ICryptographyMethod">
+      <point x="0.0" y="-114.0" />
+      <point x="344.7671232876712" y="157.50684931506842" />
+      <point x="358.2191780821918" y="137.78082191780814" />
+      <point x="-50.0" y="49.0" />
+    </edge>
+    <edge source="SymmetricCryptographyMethod" target="ICryptographyMethod">
+      <point x="0.0" y="-92.0" />
+      <point x="548.931506849315" y="167.36986301369856" />
+      <point x="510.82191780821915" y="127.917808219178" />
+      <point x="50.0" y="49.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6083333333333333" x="440.5" y="460.00000000000006" />
+  <SelectedNodes>
+    <node>Message</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
