@@ -76,6 +76,22 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
+    public String encrypt(String message, String key) {
+        String res, temp;
+        temp = this.encryptionKey;
+        res = encrypt(message);
+        this.encryptionKey = temp;
+        return res;
+    }
+
+    public String decrypt(String data, String key) {
+        String res, temp;
+        temp = this.decryptionKey;
+        res = decrypt(data);
+        this.decryptionKey = temp;
+        return res;
+    }
+
     public String getEncryptionKey() {
         return encryptionKey;
     }

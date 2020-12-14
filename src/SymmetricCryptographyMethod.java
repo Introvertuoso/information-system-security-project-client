@@ -65,6 +65,16 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
+    public String encrypt(String message, String key) {
+        // Completely ignores the forced key
+        return encrypt(message);
+    }
+
+    public String decrypt(String data, String key) {
+        // Completely ignores the forced key
+        return decrypt(data);
+    }
+
     public String getKey() {
         return key;
     }
