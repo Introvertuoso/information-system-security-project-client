@@ -49,6 +49,16 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return res;
     }
 
+    @Override
+    public boolean validate(Message message) {
+        return false;
+    }
+
+    @Override
+    public boolean sign(Message message) {
+        return false;
+    }
+
     public Pair<String, String> generateKeyPair(){
         Logger.log("Generating key pair...");
         KeyPairGenerator kpg;

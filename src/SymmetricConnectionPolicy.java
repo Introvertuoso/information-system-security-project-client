@@ -31,4 +31,13 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
         return res;
     }
 
+    @Override
+    public boolean validate(Message message) {
+        return false;
+    }
+
+    @Override
+    public boolean sign(Message message) {
+        return false;
+    }
 }

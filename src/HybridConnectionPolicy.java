@@ -5,6 +5,8 @@ import java.security.Key;
 import java.util.Scanner;
 
 public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
+    ICryptographyMethod methodUsedInHandshake;
+
     @Override
     public void init() {
         Logger.log("Initializing hybrid connection...");
@@ -24,6 +26,7 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
             String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
 
+            methodUsedInHandshake = cryptographyMethod;
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
             cryptographyMethod.init();
 

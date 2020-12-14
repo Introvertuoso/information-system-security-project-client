@@ -11,6 +11,8 @@ public abstract class ConnectionPolicy {
 
     public abstract void init();
     public abstract boolean handshake(Socket socket, String phoneNumber);
+    public abstract boolean validate(Message message);
+    public abstract boolean sign(Message message);
 
     public String generateKey(int keySize){
         Logger.log("Generating key...");
