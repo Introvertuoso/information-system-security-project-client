@@ -34,6 +34,7 @@ public class ConnectionHandler {
                     Message message = new Message(
                             new Task(CLI.nextLine()), new Certificate("certificate"), null
                     );
+//                    System.out.println(message.getTask().toString());
                     this.connectionPolicy.sign(message);
                     message.packData();
                     out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));

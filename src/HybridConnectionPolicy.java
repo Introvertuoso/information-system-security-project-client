@@ -29,7 +29,7 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
             String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
 
-            methodUsedInHandshake = cryptographyMethod;
+            this.methodUsedInHandshake = cryptographyMethod;
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
             cryptographyMethod.init();
 
@@ -43,18 +43,21 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
+        Logger.log("Validating signature...");
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedhash = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
 
-            String contentDigest = bytesToHex(encodedhash) ;
+            String contentDigest = bytesToHex(encodedhash);
             String signatureDigest = methodUsedInHandshake.decrypt(message.getSignature(),
-                    ((AsymmetricCryptographyMethod) methodUsedInHandshake).getEncryptionKey());
+                    AsymmetricCryptographyMethod.loadPublicKey((
+                            (AsymmetricCryptographyMethod) methodUsedInHandshake).getEncryptionKey())
+            );
 
             if(contentDigest.equals(signatureDigest))
                 return true;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
 
         return false;
@@ -62,18 +65,20 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
 
     @Override
     public boolean sign(Message message) {
+        Logger.log("Signing message...");
         try {
             MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
             byte[] contentDigestBytes = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
             String contentDigest = bytesToHex(contentDigestBytes);
             String signature = methodUsedInHandshake.encrypt(contentDigest,
-                    ((AsymmetricCryptographyMethod) methodUsedInHandshake).getDecryptionKey());
+                    AsymmetricCryptographyMethod.loadPrivateKey((
+                            (AsymmetricCryptographyMethod) methodUsedInHandshake).getDecryptionKey())
+            );
             message.setSignature(signature);
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
-
 
         return true;
     }

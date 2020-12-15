@@ -3,6 +3,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
@@ -65,12 +66,12 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
-    public String encrypt(String message, String key) {
+    public String encrypt(String message, Key key) {
         // Completely ignores the forced key
         return encrypt(message);
     }
 
-    public String decrypt(String data, String key) {
+    public String decrypt(String data, Key key) {
         // Completely ignores the forced key
         return decrypt(data);
     }

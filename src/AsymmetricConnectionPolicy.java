@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,18 +48,21 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
+        Logger.log("Validating signature...");
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedhash = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
 
             String contentDigest = bytesToHex(encodedhash) ;
             String signatureDigest = cryptographyMethod.decrypt(message.getSignature(),
-                    ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey());
+                    AsymmetricCryptographyMethod.loadPublicKey(
+                            ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey())
+            );
 
             if(contentDigest.equals(signatureDigest))
                 return true;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
 
         return false;
@@ -70,16 +72,19 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean sign(Message message) {
+        Logger.log("Signing message...");
         try {
             MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
             byte[] contentDigestBytes = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
             String contentDigest = bytesToHex(contentDigestBytes);
             String signature = cryptographyMethod.encrypt(contentDigest,
-                    ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey());
+                    AsymmetricCryptographyMethod.loadPrivateKey(
+                            ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey())
+            );
             message.setSignature(signature);
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
 
 

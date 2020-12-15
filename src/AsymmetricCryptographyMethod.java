@@ -19,7 +19,6 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         Logger.log("Initializing asymmetric encryption...");
         try {
             cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-
         } catch (Exception e) {
             Logger.log(e.getMessage());
         }
@@ -27,9 +26,18 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
 
     @Override
     public String encrypt(String data) {
+        return this.encrypt(data, loadPublicKey(this.encryptionKey));
+    }
+
+    @Override
+    public String decrypt(String data) {
+        return this.decrypt(data, loadPrivateKey(this.decryptionKey));
+    }
+
+    public String encrypt(String data, Key key) {
         Logger.log("Encrypting asymmetrically...");
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, loadPublicKey(this.encryptionKey));
+            cipher.init(Cipher.ENCRYPT_MODE, key);
             return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
 
         } catch (Exception e) {
@@ -38,16 +46,16 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
-    @Override
-    public String decrypt(String data) {
+    public String decrypt(String data, Key key) {
         Logger.log("Decrypting asymmetrically...");
         try {
-            cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(this.decryptionKey));
+            cipher.init(Cipher.DECRYPT_MODE, key);
 
             return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
 
         } catch (Exception e) {
             Logger.log(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
@@ -74,22 +82,6 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         } catch (Exception ignored) {
         }
         return null;
-    }
-
-    public String encrypt(String message, String key) {
-        String res, temp;
-        temp = this.encryptionKey;
-        res = encrypt(message);
-        this.encryptionKey = temp;
-        return res;
-    }
-
-    public String decrypt(String data, String key) {
-        String res, temp;
-        temp = this.decryptionKey;
-        res = decrypt(data);
-        this.decryptionKey = temp;
-        return res;
     }
 
     public String getEncryptionKey() {
