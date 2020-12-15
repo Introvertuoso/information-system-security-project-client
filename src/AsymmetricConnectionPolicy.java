@@ -3,12 +3,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
@@ -51,12 +49,53 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
+
+            String contentDigest = bytesToHex(encodedhash) ;
+            String signatureDigest = cryptographyMethod.decrypt(message.getSignature(),
+                    ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey());
+
+            if(contentDigest.equals(signatureDigest))
+                return true;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
+
+
     @Override
     public boolean sign(Message message) {
-        return false;
+        try {
+            MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
+            byte[] contentDigestBytes = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
+            String contentDigest = bytesToHex(contentDigestBytes);
+            String signature = cryptographyMethod.encrypt(contentDigest,
+                    ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey());
+            message.setSignature(signature);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+
+        return true;
+    }
+
+    public String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     public Pair<String, String> generateKeyPair(){
@@ -102,5 +141,8 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
         return  generateKeyPair();
     }
+
+
+
 
 }
