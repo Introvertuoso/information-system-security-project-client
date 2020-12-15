@@ -31,11 +31,21 @@ public class ConnectionHandler {
             } else {
                 System.out.println("\nEnter your commands below ");
                 while (CLI.hasNextLine()) {
-                    Message message = new Message(new Task(CLI.nextLine()), new Certificate("certificate"));
+                    Message message = new Message(
+                            new Task(CLI.nextLine()), new Certificate("certificate"), null
+                    );
+                    this.connectionPolicy.sign(message);
                     message.packData();
                     out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
-                    data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-                    System.out.println("\n" + data);
+                    String raw = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
+                    Message response = new Message(raw);
+                    response.unpackData();
+                    if (!this.connectionPolicy.validate(response)) {
+                        Logger.log("Signature invalid.");
+                    } else {
+                        data = response.getTask().toString();
+                        System.out.println("\n" + data);
+                    }
                 }
 
             }
