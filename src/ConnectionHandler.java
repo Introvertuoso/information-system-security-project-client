@@ -40,6 +40,7 @@ public class ConnectionHandler {
 //                    System.out.println(message.getTask().toString());
                     this.connectionPolicy.sign(message);
                     message.packData();
+                    System.out.println(this.connectionPolicy.clientCertificate);
                     out.println(connectionPolicy.cryptographyMethod.encrypt(message.getData()));
                     String raw = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
                     Message response = new Message(raw);
@@ -47,6 +48,7 @@ public class ConnectionHandler {
                     if (!this.connectionPolicy.validate(response)) {
                         Logger.log("Signature invalid.");
                     } else {
+                        this.connectionPolicy.setClientCertificate(response.getCertificate());
                         data = response.getTask().toString().trim();
                         if (data.equals(Logger.TERMINATE)) {
                             throw new Exception("");

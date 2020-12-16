@@ -40,4 +40,12 @@ public abstract class ConnectionPolicy {
         srandom.nextBytes(iv);
         return Base64.getEncoder().encodeToString(iv);
     }
+
+    public Certificate getClientCertificate() {
+        return clientCertificate;
+    }
+
+    public void setClientCertificate(Certificate clientCertificate) {
+        this.clientCertificate = clientCertificate;
+    }
 }
