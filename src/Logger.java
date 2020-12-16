@@ -12,9 +12,11 @@ public class Logger {
     public static boolean fileLogs = false;
     public static String FAILURE = "Failure\n";
     public static String SUCCESS = "Success\n";
+    public static String TERMINATE = "Terminate";
     private static ArrayList<String> logs;
     
     public static void start() {
+        Logger.log("");
         if (fileLogs) {
             ScheduledExecutorService executor =
                     Executors.newSingleThreadScheduledExecutor();

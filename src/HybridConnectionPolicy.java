@@ -24,16 +24,16 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         try {
             Scanner in = new Scanner(socket.getInputStream());
             
-            super.handshake(socket, phoneNumber);
+            res = super.handshake(socket, phoneNumber);
 
-            String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
-            String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
+            if (res) {
+                String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
+                String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
 
-            this.methodUsedInHandshake = cryptographyMethod;
-            cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
-            cryptographyMethod.init();
-
-            res = true;
+                this.methodUsedInHandshake = cryptographyMethod;
+                cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
+                cryptographyMethod.init();
+            }
 
         } catch (IOException e) {
             Logger.log(e.getMessage());

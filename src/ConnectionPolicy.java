@@ -8,6 +8,7 @@ import java.util.Base64;
 
 public abstract class ConnectionPolicy {
     protected ICryptographyMethod cryptographyMethod;
+    protected Certificate clientCertificate;
 
     public abstract void init();
     public abstract boolean handshake(Socket socket, String phoneNumber);

@@ -20,25 +20,34 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean handshake(Socket socket, String phoneNumber) {
-        Logger.log("Performing handshake...");
         boolean res = false;
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+            Pair<Certificate,String> keys = getUserCredentials(phoneNumber);
 
-            Pair<String,String> keys = getUserKeys(phoneNumber);
+            clientCertificate = keys.getKey();
+            String publicKey = clientCertificate.getCsr().getPublicKey();
+            String privateKey = keys.getValue();
 
-            String publicKey = keys.getKey();         //generate the public key
-            String privateKey = keys.getValue();     //generate the private key
-
+            Logger.log("Performing handshake...");
             out.println(publicKey);
             String serverPublicKey = in.nextLine();
+
+            Certificate serverCertificate = new Certificate(in.nextLine());
 
             ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(serverPublicKey);
             ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
 
-            res = true;
+            if (!validate(serverCertificate)) {
+                Logger.log("Server certificate invalid.");
+            }
+            else {
+                out.println(clientCertificate.toString());
+                clientCertificate = new Certificate(in.nextLine());
+                res = true;
+            }
 
         } catch (IOException e) {
             Logger.log(e.getMessage());
@@ -48,6 +57,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
+        // TODO: abstract signature verification with hash
         Logger.log("Validating signature...");
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -68,7 +78,21 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return false;
     }
 
+    public boolean validate(Certificate certificate) {
+        Logger.log("Validating server certificate...");
+        String assumedServerPublicKey = ((AsymmetricCryptographyMethod)this.cryptographyMethod).getEncryptionKey();
+        String localCAPublicKey = "";
 
+        try {
+            localCAPublicKey = Files.readAllLines(Path.of("CA/Built_in_CA.txt")).get(2);
+
+        } catch (IOException e) {
+            Logger.log("IO issues encountered.");
+        }
+        return
+                verifySignatureHash(certificate.getCsr().toString(), certificate.getSignature(), localCAPublicKey) &&
+                        (certificate.getCsr().getPublicKey().equals(assumedServerPublicKey));
+    }
 
     @Override
     public boolean sign(Message message) {
@@ -86,7 +110,6 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         } catch (NoSuchAlgorithmException e) {
             Logger.log(e.getMessage());
         }
-
 
         return true;
     }
@@ -122,32 +145,53 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return null;
     }
 
-    public Pair<String,String> getUserKeys(String phoneNumber){
-        Logger.log("Checking user credentials...");
+    public Pair<Certificate,String> getUserCredentials(String phoneNumber){
+        Logger.log("Obtaining key pair...");
         try {
             List<String> lines = Files.readAllLines(Path.of("files/users.txt"));
             for (String line : lines) {
-                String[] temp = line.split("\0");
-                if (temp[0].equals(phoneNumber) )
-                    return new Pair<>(temp[1],temp[2]);
+                String[] temp = line.split("\0", 2);
+                Certificate certificate = new Certificate(temp[1]);
+                if (certificate.getCsr().getPhoneNumber().equals(phoneNumber))
+                    return new Pair<>(certificate, temp[0]);
             }
             Pair<String, String> keys = generateKeyPair();
-            String temp[] = {phoneNumber ,keys.getKey(),keys.getValue() };
-            String line =  String.join("\0", temp)+'\n';
+            Certificate certificate = new Certificate(
+                    new CSR("localhost", phoneNumber, keys.getKey(), "2025", "")
+            );
+            String[] temp = {keys.getValue(), certificate.toString()};
+            String line =  String.join("\0", temp) + '\n';
             FileWriter writer = new FileWriter("files/users.txt",true);
             writer.write(line);
             writer.close();
 
-            return keys;
+            return new Pair<>(certificate, temp[0]);
 
         } catch (IOException e) {
             Logger.log(e.getMessage());
         }
 
-        return  generateKeyPair();
+        return new Pair<>(new Certificate(""), "");
     }
 
+    public boolean verifySignatureHash(String document, String signature, String key) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(document.getBytes(StandardCharsets.UTF_8));
 
+            String contentDigest = bytesToHex(encodedhash) ;
+            String signatureDigest = cryptographyMethod.decrypt(signature,
+                    AsymmetricCryptographyMethod.loadPublicKey(key)
+            );
 
+            if(contentDigest.equals(signatureDigest))
+                return true;
+
+        } catch (NoSuchAlgorithmException e) {
+            Logger.log(e.getMessage());
+        }
+
+        return false;
+    }
 
 }

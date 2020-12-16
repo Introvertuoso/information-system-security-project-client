@@ -23,6 +23,8 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
             out.println(IV);
             ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
 
+            clientCertificate = new Certificate("");
+
             res = true;
             
         } catch (IOException e) {
@@ -33,11 +35,11 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean sign(Message message) {
-        return false;
+        return true;
     }
 }
