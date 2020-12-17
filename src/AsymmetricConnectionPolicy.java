@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
@@ -89,6 +90,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         } catch (IOException e) {
             Logger.log("IO issues encountered.");
         }
+
         return
                 verifySignatureHash(certificate.getCsr().toString(), certificate.getSignature(), localCAPublicKey) &&
                         (certificate.getCsr().getPublicKey().equals(assumedServerPublicKey));
@@ -148,19 +150,23 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     public Pair<Certificate,String> getUserCredentials(String phoneNumber){
         Logger.log("Obtaining key pair...");
         try {
-            List<String> lines = Files.readAllLines(Path.of("files/users.txt"));
-            for (String line : lines) {
-                String[] temp = line.split("\0", 2);
-                Certificate certificate = new Certificate(temp[1]);
-                if (certificate.getCsr().getPhoneNumber().equals(phoneNumber))
-                    return new Pair<>(certificate, temp[0]);
+            String content = Files.readString(Path.of("files/users.txt"));
+            if (!content.equals("")) {
+                String[] entries = content.split("\t");
+                for (String line : entries) {
+                    String[] temp = line.split("\0", 2);
+                    Certificate certificate = new Certificate(temp[1]);
+                    if (certificate.getCsr().getPhoneNumber().equals(phoneNumber))
+                        return new Pair<>(certificate, temp[0]);
+                }
             }
+
             Pair<String, String> keys = generateKeyPair();
             Certificate certificate = new Certificate(
                     new CSR("localhost", phoneNumber, keys.getKey(), "2025", "")
             );
             String[] temp = {keys.getValue(), certificate.toString()};
-            String line =  String.join("\0", temp) + '\n';
+            String line =  String.join("\0", temp) + '\t';
             FileWriter writer = new FileWriter("files/users.txt",true);
             writer.write(line);
             writer.close();
@@ -172,6 +178,39 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         }
 
         return new Pair<>(new Certificate(""), "");
+    }
+
+    public void updateUserCredentials(Certificate newCertificate) {
+        Logger.log("Updating user credentials...");
+        String[] entries;
+        String targetPrivateKey = null;
+        int targetLineIndex = -1;
+
+        try {
+            String content = Files.readString(Path.of("files/users.txt"));
+            entries = content.split("\t");
+
+            for (int i = 0; i < entries.length; i++) {
+                String[] temp = entries[i].split("\0", 2);
+                Certificate certificate = new Certificate(temp[1]);
+                if (certificate.getCsr().getPhoneNumber().equals(newCertificate.getCsr().getPhoneNumber())) {
+                    targetPrivateKey = temp[0];
+                    targetLineIndex = i;
+                }
+            }
+
+            String[] temp = {targetPrivateKey, newCertificate.toString()};
+            String newLine = String.join("\0", temp);
+
+            entries[targetLineIndex] = newLine;
+
+            FileWriter writer = new FileWriter("files/users.txt");
+            writer.write(String.join("\t", entries) + "\t");
+            writer.close();
+
+        } catch (IOException e) {
+            Logger.log(e.getMessage());
+        }
     }
 
     public boolean verifySignatureHash(String document, String signature, String key) {

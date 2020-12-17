@@ -27,8 +27,8 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             res = super.handshake(socket, phoneNumber);
 
             if (res) {
-                String sessionKey = cryptographyMethod.decrypt(in.nextLine()); //generate session key
-                String IV = cryptographyMethod.decrypt(in.nextLine()); //generate IV key
+                String sessionKey = cryptographyMethod.decrypt(in.nextLine());  //generate session key
+                String IV = cryptographyMethod.decrypt(in.nextLine());          //generate IV key
 
                 this.methodUsedInHandshake = cryptographyMethod;
                 cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
